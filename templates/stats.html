@@ -1,0 +1,31 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+	<h1>Tavi dati</h1>
+	<p>Sveiki, {{username}}!</p>
+	<h2>Tavi darāmie darbi</h2>
+	<table class="table">
+		<tr>
+			<th>Darbs</th>
+			<th>Ilgums</th>
+			<th>Statuss</th>
+		</tr>
+
+		{% for viens in darbi %}
+		<tr class="{% if viens.statuss == True %}table-success{% else %}table-danger{% endif %}">
+			<td>{{viens.nosaukums}}</td>
+			<td>{{viens.ilgums}}</td>
+			<td>
+
+				{% if viens.statuss == True %}
+				Pabeigts
+				{% else %}
+				Jādara
+				{% endif %}
+
+
+			</td>
+		</tr>
+		{% endfor %}
+
+	</table>

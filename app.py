@@ -1,55 +1,122 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-import sqlite3
+
+from flask import Flask, render_template, request, redirect, url_for
+import sqlite3, random
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-app.secret_key = "loti_slepeni_123"
+def datubaze():
+	conn = sqlite3.connect('projekts.db')
+	c = conn.cursor()
+	conn.commit()
+	conn.close()
 
-@app.before_request
-def gatekeeper():
-    # Saraksts ar ceļiem, kuriem var piekļūt bez ielogošanās
-    # Jāpārbauda savi funkciju (funkciju, nevis path) nosaukumi!
-    publiskie_celi = ['sakums', 'login', 'register', 'static']
-    
-    # Ja lietotājs nav sesijā un mēģina piekļūt ne-publiskam ceļam
-    if 'id' not in session and request.endpoint not in publiskie_celi:
-        return redirect("/pieteikties")
+	datubaze()
 
 
+@app.route('/')
+def index():
+	return render_template('index.html')
 
-@app.route("/login", methods=['GET', 'POST'])
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
 	if request.method == 'POST':
-		lietotajs = request.form.get('lietotajs')
-		parole = request.form.get('parole')
+		username = request.form['username']
+		password = request.form['password']
 
-		conn = sqlite3.connect("imdb2026.db")
+		conn = sqlite3.connect('projekts.db')
 		conn.row_factory = sqlite3.Row
 		c = conn.cursor()
-		c.execute("SELECT * FROM lietotaji WHERE lietotajvards = ?", (lietotajs,))
-		atbilde = c.fetchone()
+
+		c.execute("SELECT * FROM lietotajs WHERE username=?", (username,))
+		user = c.fetchone()
+
 		conn.close()
 
-		if atbilde and check_password_hash(atbilde['parole'], parole):
-			session["id"] = atbilde["id"]
-			session["lietotajs"] = atbilde["lietotajvards"]
-			session["vards"] = atbilde["vards"]
-			session["tema"] = 'light'
-			return redirect("/")
+		if user and check_password_hash(user["password"], password):
+			return redirect(url_for('game'))
 		else:
-			return "Nepareizi dati!"
+			return "Incorrect data"
 
-	return render_template("login.html")
-
-@app.route("/game")
-def sakums():
-	return render_template("game.html")
-
-@app.route("/")
-def sakums():
-	return render_template("index.html")
+	return render_template('login.html')
 
 
-if __name__ == "__main__":
-	app.run(debug = True)
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+	if request.method == 'POST':
+		username = request.form['username']
+		password = request.form['password']
+		email = request.form['email']
+		conn = sqlite3.connect('projekts.db')
+		c = conn.cursor()
+		eksiste = c.execute("SELECT * FROM lietotajs WHERE username = ?", (username,)).fetchone()
+
+		if eksiste:
+			conn.close()
+			flash(f"{username} ir jau aiznemts, megini citu!")
+			return redirect(url_for('register.html'))
+
+		password_hash = generate_password_hash(password)
+
+		c.execute("INSERT INTO lietotajs (username, email, password) VALUES (?, ?, ?)", (username, email, password_hash))
+
+		conn.commit()
+		conn.close()
+		
+
+		return redirect(url_for('game'))
+
+	return render_template('register.html')
+
+
+@app.route('/game')
+def game():
+	guesses = []
+	keys = []
+	for i in range(4):
+		dig = random.randrange(0, 10)
+		guesses.append(dig)
+		if request.method == 'POST':
+			digit1 = request.form['input1']
+			digit2 = request.form['input2']
+			digit3 = request.form['input3']
+			digit4 = request.form['input4']
+			for one in range(4):
+				if digit1 == guesses[0]:
+					keys.append(2)
+				elif digit2 == guesses[1]:
+					keys.append(2)
+				elif digit3 == guesses[2]:
+					keys.append(2)
+				elif digit4 == guesses[3]:
+					keys.append(2)
+				else:
+					keys.append(1)
+					   
+
+	return render_template('game.html')
+
+	
+@app.route("/stats", methods=['GET', 'POST'])
+def stats():
+	if request.method == 'POST':
+		conn = sqlite3.connect('projekts.db')
+		c = conn.cursor()
+		users = c.execute("SELECT * FROM lietotajs WHERE username = ?", (username,)).fetchone()
+
+		conn.close()
+	darbu_saraksts = [
+	{"nosaukums": "uzstādīt Flask", "ilgums": 10, "statuss": True},
+	{"nosaukums": "izveidot app.py", "ilgums": 20, "statuss": True},
+	{"nosaukums": "pielikt bootstrap", "ilgums": 15, "statuss": False},
+	{"nosaukums": "pielikt ievades formas", "ilgums": 30, "statuss": False}
+	]
+
+	return render_template("stats.html", darbi = darbu_saraksts)
+
+
+
+
+if __name__ == '__main__':
+	app.run(debug=True)

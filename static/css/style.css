@@ -1,0 +1,134 @@
+
+
+body {
+  text-align: center;
+  background-color: linen;
+  color: white;
+}
+
+h1, p {
+  font-family: Franklin Gothic;
+  margin-top: 40px;
+  color: #412722;
+  font-size: 45px;
+}
+
+h2 {
+  font-family: Arial;
+  margin-top: 20px;
+  color: #474954;
+  font-size: 20px;
+}
+
+
+button.frontpage {
+  padding: 20px 70px;
+  margin: 5px;
+  background-color: #538d4e;
+  color: white;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+button:hover {
+  
+}
+
+button.form {
+  padding: 15px 115px;
+  margin: 10px;
+  background-color: #412722;
+  color: white;
+  border-radius: 0px;
+  cursor: pointer;
+}
+
+
+input.game {
+  padding: 10px;
+  margin: 5px;
+  width: 50px;
+}
+
+input.wrong {
+  padding: 10px;
+  margin: 5px;
+  width: 50px;
+  background-color: red;
+}
+
+input.right {
+  padding: 10px;
+  margin: 5px;
+  width: 50px;
+  background-color: green;
+}
+
+
+input.login {
+  padding: 10px 50px;
+  margin: 5px;
+
+}
+
+.grid {
+  margin-top: 30px;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+}
+
+.cell {
+  width: 50px;
+  height: 50px;
+  border: 2px solid #3a3a3c;
+  margin: 5px;
+}
+
+i {
+  margin-top: 80px;
+  width: 50px;
+  height: 50px;
+  color: #412722;
+  font-size: 5em;
+}
+
+ul {
+  border: 1px solid black;
+  font-family: Franklin Gothic;
+  list-style-type: none;
+  margin: 0px;
+  padding: 0px;
+  overflow: hidden;
+  background-color: linen;
+}
+
+ul li {
+  float: right;
+}
+
+ul li a {
+  display: block;
+  color: black;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+ul li a:hover {
+  background-color: white;
+}
+
+footer {
+  position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   text-align: center;
+   margin: 30px;
+   font-family: Arial;
+   color: #474954;
+   font-size: 20px;
+}
